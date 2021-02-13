@@ -2,6 +2,7 @@
 Author: Vladislav Zagidullin<hr/>
 <h3>How to use:</h3><br>
 <ol>
+<li>Create .env file end fill like in .envExemple</li>
 <li>Require autoload</li>
 <li>Require classes:<br/>
 use Mailer\Messenger\{
