@@ -1,0 +1,7 @@
+smtp=smtp.gmail.com
+port=465
+encrypt=ssl
+user=?
+password=?
+defaultTransport=MailerTransport
+templateFolder=/Templates/
