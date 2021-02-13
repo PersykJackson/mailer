@@ -3,14 +3,14 @@
 
 namespace Mailer\Messenger;
 
-use Mailer\Transport\MailerTransportInterface;
 use Swift_Message;
 
 class Messenger
 {
-    private \Swift_Mime_SimpleMessage $message;
+    private string $message;
     private array $config;
     private string $recipient;
+    private string $title;
     public function __construct(array $config)
     {
         $this->config = $config;
@@ -20,19 +20,30 @@ class Messenger
         $this->recipient = $recipient;
         return $this;
     }
-    public function setMessage(string $message, string $title): self
+    public function setTemplate(string $template, string $message): self
     {
-        $this->message = (new Swift_Message($title))
-            ->setFrom(['maximarketmailer@gmail.com' => 'Maxi Market'])
-            ->setTo([$this->recipient => 'Recipient'])
-            ->setBody($message, 'text/html');
+        $template = file_get_contents(__DIR__.$this->config['templateFolder'].$template.".php");
+        $this->message = str_replace('{message}', $message, $template);
         return $this;
+    }
+    public function setTitle(string $title): self
+    {
+        $this->title = $title;
+        return $this;
+    }
+    public function setConfigElement(string $key, string $value): void
+    {
+        $this->config[$key] = $value;
     }
     public function execute(): bool
     {
+        $message = (new Swift_Message($this->title))
+            ->setFrom(['maximarketmailer@gmail.com' => 'Maxi Market'])
+            ->setTo([$this->recipient => 'Recipient'])
+            ->setBody($this->message, 'text/html');
         $name = 'Mailer\Transport\\'.$this->config['defaultTransport'];
         $transport = new $name($this->config);
-        $transport->send($this->message);
+        $transport->send($message);
         return true;
     }
 }
